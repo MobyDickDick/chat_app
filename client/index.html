@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="UTF-8">
+  <title>my little chat app</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="./script.js"></script>
+  </style>
+  <script> window.console = window.console || function (t) { }; </script>
+  <script> if (document.location.search.match(/type=embed/gi)) {
+      window.parent.postMessage("resize", "*");
+    } </script>
+</head>
+
+<body>
+  <div class="green-background"></div>
+  <div class="wrap">
+    <section class="left">
+      <div class="wrap-search">
+        <div class="search">
+          <input id="new-user-name" type="text" placeholder="   gebe Deinen Namen ein" class="input-search">
+        </div>
+      </div>
+      <div class="wrap-search">
+        <div class="search-enter">
+          <button class="id-enter" onclick="changeUserName()">füge hinzu</button>
+        </div>
+      </div>
+      <div class="contact-list" id="anchor-contact-list"></div>
+    </section>
+    <section class="right">
+      <div class="chatter-title">
+        <h1 id="chatters-name" style="display: table-cell; width: 100%;  height:100%;  vertical-align: middle;"></h1>
+      </div>
+      <div class="wrap-chat">
+        <div class="chat"></div>
+        <div class="information"></div>
+      </div>
+      <div class="wrap-search">
+        <div class="search">
+          <input id="written-message" type="text" placeholder="   schreibe eine Nachricht" class="input-search">
+        </div>
+      </div>
+      <div class="wrap-message-right-down">
+        <div class="search-enter">
+          <button class="id-enter" onclick="sendMessage()">sende Nachricht</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</body>
+
+</html>
