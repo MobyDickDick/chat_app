@@ -22,8 +22,11 @@ const initializeWebsocketServer = async (server) => {
 };
 
 // If a new connection is established, the onConnection function is called
-const onConnection = (ws) => {
+const onConnection = (ws, req) => {
   console.log("New websocket connection");
+
+  console.log("the searched key is: " + req.headers['sec-websocket-key']);
+
   ws.on("close", () => onClose(ws));
   ws.on("message", (message) => onClientMessage(ws, message));
   // TODO: Send all connected users and current message history to the new client
@@ -57,6 +60,8 @@ const onClientMessage = async (ws, message) => {
 const onClose = async (ws) => {
   console.log("Websocket connection closed");
   // TODO: Remove related user from connected users and propagate new list
+  
+  
 };
 
 const getMessageHistory = async () => {
