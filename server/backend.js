@@ -89,10 +89,9 @@ const renderMessage = async (messageObject) => {
   messageHistory.push(messageObject);
   await setMessageHistory(JSON.stringify(messageHistory));
 
-  /* Redistribute the message. */
-  for (const client of clients) {
-    client.send(JSON.stringify(messageObject));
-  }
+  clients.forEach(client => {
+    client.ws.send(JSON.stringify(messageObject));
+  });
 }
 
 

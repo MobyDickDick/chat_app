@@ -2,10 +2,10 @@ if (location.host.includes("localhost")) {
   // Load livereload script if we are on localhost
   document.write(
     '<script src="http://' +
-      (location.host || "localhost").split(":")[0] +
-      ':35729/livereload.js?snipver=1"></' +
-      "script>"
-  );  
+    (location.host || "localhost").split(":")[0] +
+    ':35729/livereload.js?snipver=1"></' +
+    "script>"
+  );
 }
 
 const backendUrl = window.location.origin
@@ -46,25 +46,25 @@ socket.addEventListener("message", (event) => {
 
 function showUsers(users) {
   // TODO: Show the current users as DOM elements
-  if(users!= null){
-    
+  if (users != null) {
+
     users = JSON.parse(users);
 
     let usersString = "";
 
-    for(userName of users) {
+    for (userName of users) {
 
       console.log("der nächste Username ist: " + userName);
 
       usersString += "<div>" + userName + "<div>";
-   
+
     }
 
     console.log("usersString =" + usersString);
 
     let anchor = document.getElementById("anchor-contact-list");
-    anchor.innerHTML  = usersString;
-  
+    anchor.innerHTML = usersString;
+
   }
 }
 
@@ -83,30 +83,43 @@ socket.addEventListener("error", (event) => {
 function changeUserName() {
   // TODO: Implement change userName and forward new userName to backend
 
-  let newUserName =  document.getElementById('new-user-name').value;
-  const messageObject  = {
-    type: 'user', 
-    data:  newUserName
+  let newUserName = document.getElementById('new-user-name').value;
+  const messageObject = {
+    type: 'user',
+    data: newUserName
   };
-  console.log("The userName has changed:" + JSON.stringify(messageObject));  
+  console.log("The userName has changed:" + JSON.stringify(messageObject));
   socket.send(JSON.stringify(messageObject));
 
-  const newHeaderTitle =  document.getElementById('chatters-name');
+  const newHeaderTitle = document.getElementById('chatters-name');
   console.log(newUserName + ", Dein Chat ist hier!");
   newHeaderTitle.innerText = newUserName + ", Dein Chat ist hier!";
   document.getElementById('new-user-name').value = "";
-  
+
 
 }
 
 function sendMessage() {
 
-  const messageValue =  document.getElementById('written-message').value;
-  const messageObject  = {
-    type: 'message', 
-    data:  messageValue
+  const messageValue = document.getElementById('written-message').value;
+  const messageObject = {
+    type: 'message',
+    data: messageValue
   };
-  
+
   socket.send(JSON.stringify(messageObject));
 
 }
+
+window.onload = function () {
+  
+  console.log("So, jetzt aber");
+  document.getElementById("new-user-name").addEventListener('change', (event)=>{
+  
+    console.log("Up we goo");
+    document.getElementById("enter-user-id").disabled = false;
+  
+  });
+
+};
+
