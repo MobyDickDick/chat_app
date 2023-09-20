@@ -30,12 +30,21 @@ const onConnection = (ws, req) => {
   ws.on("close", () => onClose(ws));
   ws.on("message", (message) => onClientMessage(ws, message));
   // TODO: Send all connected users and current message history to the new client
-  ws.send(JSON.stringify({ type: "ping", data: "FROM SERVER" }));
+  ws.send(JSON.stringify({ type: "yourId", data: ws.id }));
   let clientEntry = {
     ws: ws,
     userName: ""
   }
   clients.set(ws.id, clientEntry);
+
+  let userList = getUsers();
+
+  console.log("Return the userList");
+  console.dir(userList);
+
+  if(userList){
+    ws.send(JSON.stringify(userList));
+  }
 };
 
 // If a new message is received, the onClientMessage function is called
@@ -97,25 +106,24 @@ const renderMessage = async (messageObject) => {
 
 function publishNewUser(ws, messageObject) {
 
-  console.dir(messageObject);
-  console.log("messageObject.data = " + messageObject.data);
-
   if (messageObject.data != undefined) {
 
     clientToUpdate = clients.get(ws.id);
     clientToUpdate.userName = messageObject.data;
     clients.set(ws.id, clientToUpdate);
-
     publishNewUserNames();
 
   }
 }
 
 
-const getUnserNameArray = (clients) => {
+const getUserNameArray = (clients) => {
+
   arrayToReturn = [];
   clients.forEach(client => {
-    arrayToReturn.push(client.userName)
+    if(client.userName != ""){
+      arrayToReturn.push(client.userName)
+    }
   });
 
   console.log("before Array to Return");
@@ -128,17 +136,33 @@ const getUnserNameArray = (clients) => {
 module.exports = { initializeWebsocketServer };
 
 function publishNewUserNames() {
-  let userNamesArray = getUnserNameArray(clients);
 
-  let newUsersObject = {
-    type: "users",
-    data: JSON.stringify(userNamesArray)
-  };
+  let userNames = getUsers();
+  console.dir(userNames);
 
-  console.log("Die neuen Users sind: ");
-  console.dir(newUsersObject);
+  if(userNames){
+    clients.forEach(client => {
+      client.ws.send(JSON.stringify(userNames));
+    });  
+  }
+}
 
-  clients.forEach(client => {
-    client.ws.send(JSON.stringify(newUsersObject));
-  });
+function getUsers() {
+
+  let userNamesArray = getUserNameArray(clients);
+
+  if(userNamesArray.length >0){
+
+    let newUsersObject = {
+      type: "users",
+      data: JSON.stringify(userNamesArray)
+    };
+    
+    return newUsersObject;
+  
+  }else{
+
+    return null;
+
+  }
 }

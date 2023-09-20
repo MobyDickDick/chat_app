@@ -17,7 +17,8 @@ const socket = new WebSocket(backendUrl);
 // !!!!!!!!!!!! DON'T TOUCH ANYTHING ABOVE THIS LINE !!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-const users = [];
+let users = [];
+let myId = "";
 
 socket.addEventListener("open", async (event) => {
   console.log("WebSocket connected!");
@@ -29,42 +30,56 @@ socket.addEventListener("message", (event) => {
   console.log("Received message from server: " + messageObject.type);
   console.log("Received message data from server: " + messageObject.data);
   switch (messageObject.type) {
-    case "ping":
-      socket.send(JSON.stringify({ type: "pong", data: "FROM CLIENT" }));
+    case "yourId":
+      
+      myId = messageObject.data;
+      console.log("myId =" + myId);
       break;
+    
     case "users":
+
       console.log("Here come the userNames...");
-      showUsers(messageObject.data);
+      users = JSON.parse(messageObject.data);
+      showUsers(users);
       break;
+    
     case "message":
+    
       // TODO: Show new message as DOM element append to chat history
       break;
+    
     default:
       console.error("Unknown message type: " + messageObject.type);
   }
 });
 
-function showUsers(users) {
+async function showUsers (users) {
   // TODO: Show the current users as DOM elements
-  if (users != null) {
 
-    users = JSON.parse(users);
+  console.dir(users);
+
+  if (users && (users.length > 0)) {
 
     let usersString = "";
 
     for (userName of users) {
 
       console.log("der nächste Username ist: " + userName);
-
       usersString += "<div>" + userName + "<div>";
 
     }
 
-    console.log("usersString =" + usersString);
-
     let anchor = document.getElementById("anchor-contact-list");
-    anchor.innerHTML = usersString;
-
+    console.dir(anchor );
+    if(anchor == null){
+      window.addEventListener("load", (event) => {
+        let anchor = document.getElementById("anchor-contact-list");
+        console.log("Die Benutzerliste wird erstellt =" + usersString);
+        anchor.innerHTML= usersString;
+      });  
+    }else{
+      anchor.innerHTML= usersString;
+    }
   }
 }
 
@@ -84,6 +99,36 @@ function changeUserName() {
   // TODO: Implement change userName and forward new userName to backend
 
   let newUserName = document.getElementById('new-user-name').value;
+
+  let found = undefined;
+
+  console.dir(users);
+
+  if(users.length > 0){
+
+    found = users.find((element) => (element === newUserName));
+    console.log("found = " + found);
+
+    if(!found) {
+
+      executeChangeUserName(newUserName);
+
+    }else{
+  
+      console.log("No new user entered.");
+      alert('Benutzername ${newUserName} existiert schon! Wähle einen anderen Namen.');
+    
+    }  
+  }else{
+    
+    executeChangeUserName(newUserName);
+
+  }
+}
+
+function executeChangeUserName(newUserName) {
+  console.log("....und wieder einmal wird der Name gewechselt");
+
   const messageObject = {
     type: 'user',
     data: newUserName
@@ -97,15 +142,14 @@ function changeUserName() {
   let newUserInputTextField = document.getElementById('new-user-name');
   newUserInputTextField.value = "";
   let enterNewUserNameButton = document.getElementById("enter-user-id");
-  enterNewUserNameButton.innerText = "ändere Namen"; 
-  enterNewUserNameButton.disabled = true; 
+  enterNewUserNameButton.innerText = "ändere Namen";
+  enterNewUserNameButton.disabled = true;
   let messageTextField = document.getElementById("written-message");
   messageTextField.disabled = false;
   let enterTextField = document.getElementById("write-message");
-  enterTextField.setAttribute("style", "background-color: #FFFFFF")
+  enterTextField.setAttribute("style", "background-color: #FFFFFF");
   let enterMessageButton = document.getElementById("enter-message");
   enterMessageButton.disabled = false;
-  
 }
 
 function sendMessage() {
@@ -122,10 +166,8 @@ function sendMessage() {
 
 checkEnableEnterUserId = (event) => {
 
-  console.dir(event);
   let enterNewUserNameButton = document.getElementById("enter-user-id");
   let newUserInputTextField = document.getElementById("new-user-name")
   enterNewUserNameButton.disabled = (newUserInputTextField.value === "") ? true : false;
 
 }
-
