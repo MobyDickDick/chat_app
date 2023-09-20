@@ -23,10 +23,11 @@ const initializeWebsocketServer = async (server) => {
 
 // If a new connection is established, the onConnection function is called
 const onConnection = (ws, req) => {
-  console.log("New websocket connection");
 
-  console.log("the searched key is: " + req.headers['sec-websocket-key']);
+  ws.id = req.headers['sec-websocket-key'];
 
+  console.log("ws.id = " + ws.id);
+  
   ws.on("close", () => onClose(ws));
   ws.on("message", (message) => onClientMessage(ws, message));
   // TODO: Send all connected users and current message history to the new client
@@ -36,6 +37,9 @@ const onConnection = (ws, req) => {
 
 // If a new message is received, the onClientMessage function is called
 const onClientMessage = async (ws, message) => {
+  console.log("Parcing the websocket");
+  console.dir(ws.id);
+  console.log("End parcing the websocket");
   const messageObject = JSON.parse(message);
   console.log("I have received a message from client with type: " + messageObject.type);
   switch (messageObject.type) {
