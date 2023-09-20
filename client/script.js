@@ -111,15 +111,12 @@ function sendMessage() {
 
 }
 
-window.onload = function () {
-  
-  console.log("So, jetzt aber");
-  document.getElementById("new-user-name").addEventListener('change', (event)=>{
-  
-    console.log("Up we goo");
-    document.getElementById("enter-user-id").disabled = false;
-  
-  });
+checkEnableEnterUserId = (event) => {
 
-};
+  console.dir(event);
+  let enterNewUserNameButton = document.getElementById("enter-user-id");
+  let newUserInputTextField = document.getElementById("new-user-name")
+  enterNewUserNameButton.disabled = (newUserInputTextField.value === "") ? true : false;
+
+}
 
