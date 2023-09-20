@@ -2,9 +2,8 @@ const WebSocket = require("ws");
 const redis = require("redis");
 let redisClient;
 
-let clients = [];
+let clients = new Map();
 let messageHistory = [];
-const users = new Map();
 
 // Initiate the websocket server
 const initializeWebsocketServer = async (server) => {
@@ -27,12 +26,16 @@ const onConnection = (ws, req) => {
   ws.id = req.headers['sec-websocket-key'];
 
   console.log("ws.id = " + ws.id);
-  
+
   ws.on("close", () => onClose(ws));
   ws.on("message", (message) => onClientMessage(ws, message));
   // TODO: Send all connected users and current message history to the new client
   ws.send(JSON.stringify({ type: "ping", data: "FROM SERVER" }));
-  clients.push(ws);
+  let clientEntry = {
+    ws: ws,
+    userName: ""
+  }
+  clients.set(ws.id, clientEntry);
 };
 
 // If a new message is received, the onClientMessage function is called
@@ -49,7 +52,7 @@ const onClientMessage = async (ws, message) => {
     case "user":
       // TODO: Publish all connected users to all connected clients
       console.log("new userName entered: " + message);
-      publishNewUser(messageObject);
+      publishNewUser(ws, messageObject);
       break;
     case "message":
       console.log("The message was: " + messageObject.data);
@@ -64,8 +67,8 @@ const onClientMessage = async (ws, message) => {
 const onClose = async (ws) => {
   console.log("Websocket connection closed");
   // TODO: Remove related user from connected users and propagate new list
-  
-  
+
+
 };
 
 const getMessageHistory = async () => {
@@ -92,25 +95,45 @@ const renderMessage = async (messageObject) => {
 }
 
 
-function publishNewUser(messageObject){
+function publishNewUser(ws, messageObject) {
 
-  console.log("messageObject.data.userName = " + messageObject.data.userName);
+  console.dir(messageObject);
+  console.log("messageObject.data = " + messageObject.data);
 
-  if(messageObject.data.userName != undefined){
+  if (messageObject.data != undefined) {
 
-    users.set(messageObject.data.userId, messageObject.data.userName); 
-    console.log("meine users sind (als Map):" + JSON.stringify(Object.fromEntries(users)));
-    let userNamesArray = Array.from(users.values());
-    console.log("meine users sind:" + JSON.stringify(userNamesArray));
+    clientToUpdate = clients.get(ws.id);
+    clientToUpdate.userName = messageObject.data;
+    clients.set(ws.id, clientToUpdate);
 
+    let userNamesArray = getUnserNameArray(clients);
+    
     let newUsersObject = {
       type: "users",
-      data:  JSON.stringify(userNamesArray)}
+      data: JSON.stringify(userNamesArray)
+    }
 
-    for (let client of clients) {
-      client.send(JSON.stringify(newUsersObject));
-    }  
+    console.log("Die neuen Users sind: "); 
+    console.dir(newUsersObject);
+
+    clients.forEach(client => {
+      client.ws.send(JSON.stringify(newUsersObject));
+    });
   }
 }
+
+
+const getUnserNameArray = (clients) => {
+  arrayToReturn = [];
+  clients.forEach(client => {
+    arrayToReturn.push(client.userName)
+  });
+
+  console.log("before Array to Return");
+  console.dir(arrayToReturn);
+  console.log("after Array to Return");
+
+  return arrayToReturn;
+};
 
 module.exports = { initializeWebsocketServer };

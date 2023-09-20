@@ -111,8 +111,7 @@ function changeUserName() {
   const newUserName =  document.getElementById('new-user-name').value;
   const messageObject  = {
     type: 'user', 
-    data: {userName: newUserName,
-           userId: userId}
+    data:  newUserName
   };
   console.log("The userName has changed:" + JSON.stringify(messageObject));  
   socket.send(JSON.stringify(messageObject));
@@ -129,8 +128,7 @@ function sendMessage() {
   const messageValue =  document.getElementById('written-message').value;
   const messageObject  = {
     type: 'message', 
-    data: {message: messageValue,
-           userId: userId}
+    data:  messageValue
   };
   
   socket.send(JSON.stringify(messageObject));
