@@ -67,8 +67,9 @@ const onClientMessage = async (ws, message) => {
 const onClose = async (ws) => {
   console.log("Websocket connection closed");
   // TODO: Remove related user from connected users and propagate new list
-
-
+  clients.delete(ws.id);
+  publishNewUserNames();
+  
 };
 
 const getMessageHistory = async () => {
@@ -106,19 +107,8 @@ function publishNewUser(ws, messageObject) {
     clientToUpdate.userName = messageObject.data;
     clients.set(ws.id, clientToUpdate);
 
-    let userNamesArray = getUnserNameArray(clients);
-    
-    let newUsersObject = {
-      type: "users",
-      data: JSON.stringify(userNamesArray)
-    }
+    publishNewUserNames();
 
-    console.log("Die neuen Users sind: "); 
-    console.dir(newUsersObject);
-
-    clients.forEach(client => {
-      client.ws.send(JSON.stringify(newUsersObject));
-    });
   }
 }
 
@@ -137,3 +127,19 @@ const getUnserNameArray = (clients) => {
 };
 
 module.exports = { initializeWebsocketServer };
+
+function publishNewUserNames() {
+  let userNamesArray = getUnserNameArray(clients);
+
+  let newUsersObject = {
+    type: "users",
+    data: JSON.stringify(userNamesArray)
+  };
+
+  console.log("Die neuen Users sind: ");
+  console.dir(newUsersObject);
+
+  clients.forEach(client => {
+    client.ws.send(JSON.stringify(newUsersObject));
+  });
+}
