@@ -97,8 +97,8 @@ function changeUserName() {
   let newUserInputTextField = document.getElementById('new-user-name');
   newUserInputTextField.value = "";
   let enterNewUserNameButton = document.getElementById("enter-user-id");
-  enterNewUserNameButton.disabled = true;
-
+  enterNewUserNameButton.innerText = "ändere Namen"; 
+  enterNewUserNameButton.disabled = true; 
 
 
 }
