@@ -5,36 +5,13 @@ if (location.host.includes("localhost")) {
       (location.host || "localhost").split(":")[0] +
       ':35729/livereload.js?snipver=1"></' +
       "script>"
-  );
-
-  function guidGenerator() {
-    var S4 = function () {
-      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    };
-    return (
-      S4() +
-      S4() +
-      "-" +
-      S4() +
-      "-" +
-      S4() +
-      "-" +
-      S4() +
-      "-" +
-      S4() +
-      S4() +
-      S4()
-    );
-  }  
+  );  
 }
 
 const backendUrl = window.location.origin
   .replace(/^http/, "ws")
   .replace(/^https/, "wss");
 const socket = new WebSocket(backendUrl);
-
-const userId = guidGenerator();
-
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!! DON'T TOUCH ANYTHING ABOVE THIS LINE !!!!!!!!!!!!
@@ -71,19 +48,17 @@ function showUsers(users) {
   // TODO: Show the current users as DOM elements
   if(users!= null){
     
-    let sendUsers = JSON.parse(users);
+    users = JSON.parse(users);
 
-    console.log("sendUsers =" + sendUsers);
-    
     let usersString = "";
 
-    sendUsers.forEach((userName, index) =>  {
+    for(userName of users) {
 
       console.log("der nächste Username ist: " + userName);
 
       usersString += "<div>" + userName + "<div>";
    
-    })
+    }
 
     console.log("usersString =" + usersString);
 
@@ -108,7 +83,7 @@ socket.addEventListener("error", (event) => {
 function changeUserName() {
   // TODO: Implement change userName and forward new userName to backend
 
-  const newUserName =  document.getElementById('new-user-name').value;
+  let newUserName =  document.getElementById('new-user-name').value;
   const messageObject  = {
     type: 'user', 
     data:  newUserName
@@ -119,7 +94,8 @@ function changeUserName() {
   const newHeaderTitle =  document.getElementById('chatters-name');
   console.log(newUserName + ", Dein Chat ist hier!");
   newHeaderTitle.innerText = newUserName + ", Dein Chat ist hier!";
-  newUserName.innerText = "";
+  document.getElementById('new-user-name').value = "";
+  
 
 }
 
