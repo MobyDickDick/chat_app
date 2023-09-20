@@ -94,7 +94,11 @@ function changeUserName() {
   const newHeaderTitle = document.getElementById('chatters-name');
   console.log(newUserName + ", Dein Chat ist hier!");
   newHeaderTitle.innerText = newUserName + ", Dein Chat ist hier!";
-  document.getElementById('new-user-name').value = "";
+  let newUserInputTextField = document.getElementById('new-user-name');
+  newUserInputTextField.value = "";
+  let enterNewUserNameButton = document.getElementById("enter-user-id");
+  enterNewUserNameButton.disabled = true;
+
 
 
 }
