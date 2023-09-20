@@ -99,8 +99,13 @@ function changeUserName() {
   let enterNewUserNameButton = document.getElementById("enter-user-id");
   enterNewUserNameButton.innerText = "ändere Namen"; 
   enterNewUserNameButton.disabled = true; 
-
-
+  let messageTextField = document.getElementById("written-message");
+  messageTextField.disabled = false;
+  let enterTextField = document.getElementById("write-message");
+  enterTextField.setAttribute("style", "background-color: #FFFFFF")
+  let enterMessageButton = document.getElementById("enter-message");
+  enterMessageButton.disabled = false;
+  
 }
 
 function sendMessage() {
