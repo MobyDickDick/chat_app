@@ -51,6 +51,13 @@ socket.addEventListener("message", (event) => {
 
       break;
 
+    case "clearChat":
+
+      // Clears the chat.
+      clearWholeChat();
+
+     break;
+
     default:
       console.error("Unknown message type: " + messageObject.type);
   }
@@ -276,4 +283,12 @@ const formatNumber = function (numberOfDigits, numberToFormat){
   })
 
   return formattedNumber;
+}
+
+const clearWholeChat = function (){
+
+  let chat = document.getElementById("chatPart");
+  chat.innerHTML= "";
+  let information = document.getElementById("informationPart");
+  information.innerHTML = "";
 }

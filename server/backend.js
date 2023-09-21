@@ -126,6 +126,9 @@ function publishNewUser(ws, messageObject) {
   if (messageObject.data != undefined) {
 
     clientToUpdate = clients.get(ws.id);
+    if(clientToUpdate.userName != messageObject.data){
+      changeMessages(clientToUpdate.userName, messageObject.data);
+    }
     clientToUpdate.userName = messageObject.data;
     clients.set(ws.id, clientToUpdate);
     publishNewUserNames();
@@ -133,6 +136,44 @@ function publishNewUser(ws, messageObject) {
   }
 }
 
+const changeMessages = async function (oldUserName, newUserName){
+
+  console.log("old user Name =" + oldUserName);
+  console.log("new user Name =" + newUserName);
+ 
+   /* Save the message in the message history. */
+   await getMessageHistory().then(
+    getMessages => {
+      messageHistory = JSON.parse(getMessages);
+    })
+
+  console.log("old Messages = " + JSON.stringify(messageHistory));
+  let changedMessageHistory = [];
+  messageHistory.forEach(message =>{
+    console.log("message userName from history: " + message.data.userName);
+    console.log("compare message name         : " + oldUserName);
+
+    if(message.data.userName === oldUserName){
+      console.log("UserName Changed");
+      message.data.userName = newUserName;
+    }
+    changedMessageHistory.push(message);
+  });
+  console.log("new Messages = " + JSON.stringify(changedMessageHistory));
+   
+  await setMessageHistory(JSON.stringify(changedMessageHistory));
+
+  const clearChatMessage = {
+    type: 'clearChat',
+    data: ""};
+
+  clients.forEach(client => {
+    client.ws.send(JSON.stringify(clearChatMessage));
+    changedMessageHistory.forEach(message =>{
+      client.ws.send(JSON.stringify(message));
+    })
+  });
+}
 
 const getUserNameArray = (clients) => {
 
