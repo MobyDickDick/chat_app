@@ -45,6 +45,18 @@ const onConnection = (ws, req) => {
   if(userList){
     ws.send(JSON.stringify(userList));
   }
+
+  getMessageHistory().then(
+    messageHistory =>{
+      console.dir(messageHistory);
+      if(messageHistory){
+        let parsedMessageHistory = JSON.parse(messageHistory);
+        parsedMessageHistory.forEach(message =>{
+          ws.send(JSON.stringify(message));
+        });
+      }
+    }
+  )
 };
 
 // If a new message is received, the onClientMessage function is called
@@ -64,7 +76,7 @@ const onClientMessage = async (ws, message) => {
       publishNewUser(ws, messageObject);
       break;
     case "message":
-      console.log("The message was: " + messageObject.data);
+      console.log("The message was: " + JSON.stringify(messageObject.data));
       renderMessage(messageObject);
       break;
     default:
@@ -95,6 +107,11 @@ const renderMessage = async (messageObject) => {
   console.log("Here we are!");
 
   /* Save the message in the message history. */
+  await getMessageHistory().then(
+    getMessages => {
+      messageHistory = JSON.parse(getMessages);
+    })
+
   messageHistory.push(messageObject);
   await setMessageHistory(JSON.stringify(messageHistory));
 

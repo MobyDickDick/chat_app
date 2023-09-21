@@ -144,6 +144,7 @@ body {
     width: 100%;
     height: calc(100% - 105px);
     padding: 1em;
+    flex-direction: column;
     overflow-y: auto;
 }
 
@@ -311,6 +312,7 @@ body {
     width: 350px;
     max-width: 100%;
     position: relative;
+    background-color: #eeeeee;
 }
 
 .you {

@@ -62,10 +62,9 @@ async function showUsers(users) {
 
     let usersString = "";
 
-    for (userName of users) {
+    for (let receivedUserName of users) {
 
-      console.log("der nächste Username ist: " + userName);
-      usersString += "<div>" + userName + "</div>";
+      usersString += "<div>" + receivedUserName + "</div><p>";
 
     }
 
@@ -86,24 +85,37 @@ async function showUsers(users) {
 function showMessage(message) {
   // TODO: Show new message as DOM element append to chat history
 
-  let currentdate = new Date();
-  let datetime = currentdate.getDay() + "." + currentdate.getMonth() 
-    + "." + currentdate.getFullYear() + " " 
-    + currentdate.getHours() + ":" 
-    + currentdate.getMinutes() + ":" + currentdate.getSeconds();
   
-  let chatMessageString = `
-    <div class="chat-bubble">
-    <div>${datetime}</div> 
-    <div>${userName}</div>
+  let chatMessageString = "";
+  
+  if(message.userName === userName){
+    chatMessageString += '<div class="chat-bubble" hidden>';
+  }else{
+    chatMessageString += '<div class="chat-bubble">';
+  }
+
+  chatMessageString += `
+    <div>${message.timeStamp}</div> 
+    <div>${message.userName}</div>
     <div> ${message.message} </div> 
     </div>`;
 
-    
-  let informationMessagesString = `
-  <div class="chat-bubble">
-  <div>${datetime}</div> 
-  <div>${userName}</div>
+
+  console.log("message.userName = " + message.userName);
+  console.log("userName = " + userName);
+  console.log("myId = " + myId);
+
+  let informationMessagesString = "";
+
+  if(message.userName === userName){
+    informationMessagesString += '<div class="chat-bubble">';
+  }else{
+    informationMessagesString += '<div class="chat-bubble" hidden>';
+  }
+
+
+  informationMessagesString += `
+  <div>${message.timeStamp}</div> 
   <div> ${message.message} </div> 
   </div>`;
 
@@ -119,6 +131,19 @@ socket.addEventListener("close", (event) => {
 socket.addEventListener("error", (event) => {
   console.error("WebSocket error:", event);
 });
+
+function gettimeStamp(datetime) {
+
+  let currentdate = new Date();
+  datetime = currentdate.getDay() + "." + currentdate.getMonth()
+    + "." + currentdate.getFullYear() + " "
+    + formatNumber(2, currentdate.getHours()) + ":"
+    + formatNumber(2, currentdate.getMinutes()) + ":"
+    + formatNumber(2, currentdate.getSeconds());
+
+  return datetime;
+
+}
 
 async function writChatOrInformation(placeToInsert, messageString) {
 
@@ -191,17 +216,22 @@ function executeChangeUserName(newUserName) {
   enterTextField.setAttribute("style", "background-color: #FFFFFF");
 
   userName = newUserName;
+  console.log("Username chagned: " + userName)
 
 }
 
 function sendMessage() {
 
+  let dateTime = gettimeStamp();
+  console.log(dateTime = dateTime);
+
   const messageValue = document.getElementById('written-message').value;
   const messageObject = {
     type: 'message',
     data: {
-      message: messageValue,
-      userName: userName
+      timeStamp: dateTime,
+      userName: userName,
+      message: messageValue
     }
   };
 
@@ -209,6 +239,9 @@ function sendMessage() {
 
   let messageTextField = document.getElementById("written-message");
   messageTextField.value = "";
+
+  let messageSendButton = document.getElementById("enter-message");
+  messageSendButton.disabled = true;
 
 
 }
@@ -229,9 +262,18 @@ checkEnableEnterMessage = (event) => {
 
 }
 
-var stringToHTML = function (str) {
+const stringToHTML = function (str) {
 	var parser = new DOMParser();
 	var doc = parser.parseFromString(str, 'text/html');
-  console.dir(doc.body);
-	return doc;
+	return doc.body;
 };
+
+const formatNumber = function (numberOfDigits, numberToFormat){
+
+  let formattedNumber = numberToFormat.toLocaleString('de-CH', {
+    minimumIntegerDigits: 2,
+    useGrouping: false
+  })
+
+  return formattedNumber;
+}
