@@ -93,7 +93,7 @@ function showMessage(message) {
     + currentdate.getMinutes() + ":" + currentdate.getSeconds();
   
   let chatMessageString = `
-    <div>
+    <div class="chat-bubble">
     <div>${datetime}</div> 
     <div>${userName}</div>
     <div> ${message.message} </div> 
@@ -101,7 +101,7 @@ function showMessage(message) {
 
     
   let informationMessagesString = `
-  <div>
+  <div class="chat-bubble">
   <div>${datetime}</div> 
   <div>${userName}</div>
   <div> ${message.message} </div> 
@@ -122,15 +122,17 @@ socket.addEventListener("error", (event) => {
 
 async function writChatOrInformation(placeToInsert, messageString) {
 
+  let convertedHTMLString = stringToHTML(messageString);
+  
   let anchor = document.getElementById(placeToInsert);
   console.dir(anchor);
   if (anchor == null) {
     window.addEventListener("load", (event) => {
       let anchor = document.getElementById(placeToInsert);
-      anchor.insertAdjacentElement('beforeend', stringToHTML(messageString)); 
+      anchor.insertAdjacentElement('beforeend', convertedHTMLString.childNodes[0]); 
     });
   } else {
-    anchor.insertAdjacentElement('beforeend', stringToHTML(messageString)); 
+    anchor.insertAdjacentElement('beforeend', convertedHTMLString.childNodes[0]); 
   }
 }
 
@@ -230,5 +232,6 @@ checkEnableEnterMessage = (event) => {
 var stringToHTML = function (str) {
 	var parser = new DOMParser();
 	var doc = parser.parseFromString(str, 'text/html');
-	return doc.body;
+  console.dir(doc.body);
+	return doc;
 };

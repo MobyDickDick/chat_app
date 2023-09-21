@@ -252,27 +252,20 @@ body {
     background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/1089577/background.png);
     height: calc(100% - 160px);
     display: flex;
-    flex-direction: raw;
+    flex-direction: row;
     flex-wrap: wrap;
 }
 
 .chat {
     display:inline-flex;
     width: 50%;
-    padding: 0px 10%;
+    padding: 0px 5%;
     padding-top: 7px;
+    height: 100%;
+    overflow-x: clip;
     overflow-y: auto;
+    display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
-}
-
-.information {
-    display:inline-flex;
-    width: 50%;
-    position: relative;
-    overflow: auto;
-    flex-direction: column;
-    flex-wrap: wrap;
 }
 
 .information div {
