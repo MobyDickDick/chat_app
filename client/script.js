@@ -141,15 +141,16 @@ function executeChangeUserName(newUserName) {
   newHeaderTitle.innerText = newUserName + ", Dein Chat ist hier!";
   let newUserInputTextField = document.getElementById('new-user-name');
   newUserInputTextField.value = "";
+  newUserInputTextField.setAttribute("placeholder", "   gebe Deinen neuen Namen ein");
   let enterNewUserNameButton = document.getElementById("enter-user-id");
   enterNewUserNameButton.innerText = "ändere Namen";
   enterNewUserNameButton.disabled = true;
   let messageTextField = document.getElementById("written-message");
   messageTextField.disabled = false;
+  messageTextField.setAttribute("placeholder", "   schreibe eine Nachricht")
   let enterTextField = document.getElementById("write-message");
   enterTextField.setAttribute("style", "background-color: #FFFFFF");
-  let enterMessageButton = document.getElementById("enter-message");
-  enterMessageButton.disabled = false;
+
 }
 
 function sendMessage() {
@@ -169,5 +170,13 @@ checkEnableEnterUserId = (event) => {
   let enterNewUserNameButton = document.getElementById("enter-user-id");
   let newUserInputTextField = document.getElementById("new-user-name")
   enterNewUserNameButton.disabled = (newUserInputTextField.value === "") ? true : false;
+
+}
+
+checkEnableEnterMessage = (event) => {
+
+  let enterNewMesageInputTextFile = document.getElementById("written-message");
+  let newUserInputButton = document.getElementById("enter-message")
+  newUserInputButton.disabled = (enterNewMesageInputTextFile.value === "") ? true : false;
 
 }
