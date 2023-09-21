@@ -56,7 +56,7 @@ socket.addEventListener("message", (event) => {
       // Clears the chat.
       clearWholeChat();
 
-     break;
+      break;
 
     default:
       console.error("Unknown message type: " + messageObject.type);
@@ -92,42 +92,47 @@ async function showUsers(users) {
 function showMessage(message) {
   // TODO: Show new message as DOM element append to chat history
 
-  
   let chatMessageString = "";
-  
-  if(message.userName === userName){
-    chatMessageString += '<div class="chat-bubble" hidden>';
-  }else{
-    chatMessageString += '<div class="chat-bubble">';
-  }
 
   chatMessageString += `
-    <div>${message.timeStamp}</div> 
-    <div>${message.userName}</div>
-    <div> ${message.message} </div> 
-    </div>`;
+    <div class="chat-bubble grid-item">
+    <div>${message.timeStamp}</div>`; 
 
+  console.log("message.userName = " + message.userName);
+  console.log("userName = " + userName);
+
+  let gridItem = "";
+
+  if (message.userName === userName) {
+    
+    chatMessageString += `
+      <div> ${message.message} </div> 
+      </div>`;
+
+      gridItem += `
+      <div class="grid-item"></div>
+      <div class="grid-item">${chatMessageString}</div>`;
+      
+
+  } else {
+
+    chatMessageString += `
+      <div>${message.userName}</div>
+      <div> ${message.message} </div> 
+      </div>`;
+
+    gridItem += `
+      <div class="grid-item">${chatMessageString}</div>
+      <div class="grid-item"></div>`;
+     
+  }
 
   console.log("message.userName = " + message.userName);
   console.log("userName = " + userName);
   console.log("myId = " + myId);
+  console.log("gridItem = " + gridItem);
 
-  let informationMessagesString = "";
-
-  if(message.userName === userName){
-    informationMessagesString += '<div class="chat-bubble">';
-  }else{
-    informationMessagesString += '<div class="chat-bubble" hidden>';
-  }
-
-
-  informationMessagesString += `
-  <div>${message.timeStamp}</div> 
-  <div> ${message.message} </div> 
-  </div>`;
-
-  writChatOrInformation("chatPart", chatMessageString);
-  writChatOrInformation("informationPart", informationMessagesString);
+  writeChatEntry(gridItem);
 
 }
 
@@ -152,20 +157,25 @@ function gettimeStamp(datetime) {
 
 }
 
-async function writChatOrInformation(placeToInsert, messageString) {
+async function writeChatEntry(messageString) {
 
   let convertedHTMLString = stringToHTML(messageString);
-  
-  let anchor = document.getElementById(placeToInsert);
+  console.log("The converted Element is:");
+  console.dir(convertedHTMLString.childNodes);
+  let anchor = document.getElementById("chatArea");
   console.dir(anchor);
   if (anchor == null) {
     window.addEventListener("load", (event) => {
-      let anchor = document.getElementById(placeToInsert);
-      anchor.insertAdjacentElement('beforeend', convertedHTMLString.childNodes[0]); 
+      let anchor = document.getElementById("chatArea");
+      convertedHTMLString.childNodes.forEach(childNode => {
+        anchor.insertAdjacentElement('beforeend', childNode)
+      });
     });
   } else {
-    anchor.insertAdjacentElement('beforeend', convertedHTMLString.childNodes[0]); 
-  }
+    convertedHTMLString.childNodes.forEach(childNode => {
+      anchor.insertAdjacentElement('beforeend', childNode)
+    });
+}
 }
 
 function changeUserName() {
@@ -270,12 +280,12 @@ checkEnableEnterMessage = (event) => {
 }
 
 const stringToHTML = function (str) {
-	var parser = new DOMParser();
-	var doc = parser.parseFromString(str, 'text/html');
-	return doc.body;
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(str, 'text/html');
+  return doc.body;
 };
 
-const formatNumber = function (numberOfDigits, numberToFormat){
+const formatNumber = function (numberOfDigits, numberToFormat) {
 
   let formattedNumber = numberToFormat.toLocaleString('de-CH', {
     minimumIntegerDigits: 2,
@@ -285,10 +295,8 @@ const formatNumber = function (numberOfDigits, numberToFormat){
   return formattedNumber;
 }
 
-const clearWholeChat = function (){
+const clearWholeChat = function () {
 
-  let chat = document.getElementById("chatPart");
-  chat.innerHTML= "";
-  let information = document.getElementById("informationPart");
-  information.innerHTML = "";
+  let chat = document.getElementById("chatArea");
+  chat.innerHTML = "";
 }
