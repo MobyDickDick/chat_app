@@ -19,6 +19,7 @@ const socket = new WebSocket(backendUrl);
 
 let users = [];
 let myId = "";
+let userName = "";
 
 socket.addEventListener("open", async (event) => {
   console.log("WebSocket connected!");
@@ -31,32 +32,31 @@ socket.addEventListener("message", (event) => {
   console.log("Received message data from server: " + messageObject.data);
   switch (messageObject.type) {
     case "yourId":
-      
+
       myId = messageObject.data;
       console.log("myId =" + myId);
       break;
-    
+
     case "users":
 
       console.log("Here come the userNames...");
       users = JSON.parse(messageObject.data);
       showUsers(users);
       break;
-    
+
     case "message":
-    
+
       // TODO: Show new message as DOM element append to chat history
+      showMessage(messageObject.data);
+
       break;
-    
+
     default:
       console.error("Unknown message type: " + messageObject.type);
   }
 });
 
-async function showUsers (users) {
-  // TODO: Show the current users as DOM elements
-
-  console.dir(users);
+async function showUsers(users) {
 
   if (users && (users.length > 0)) {
 
@@ -65,26 +65,51 @@ async function showUsers (users) {
     for (userName of users) {
 
       console.log("der nächste Username ist: " + userName);
-      usersString += "<div>" + userName + "<div>";
+      usersString += "<div>" + userName + "</div>";
 
     }
 
     let anchor = document.getElementById("anchor-contact-list");
-    console.dir(anchor );
-    if(anchor == null){
+    console.dir(anchor);
+    if (anchor == null) {
       window.addEventListener("load", (event) => {
         let anchor = document.getElementById("anchor-contact-list");
         console.log("Die Benutzerliste wird erstellt =" + usersString);
-        anchor.innerHTML= usersString;
-      });  
-    }else{
-      anchor.innerHTML= usersString;
+        anchor.innerHTML = usersString;
+      });
+    } else {
+      anchor.innerHTML = usersString;
     }
   }
 }
 
 function showMessage(message) {
   // TODO: Show new message as DOM element append to chat history
+
+  let currentdate = new Date();
+  let datetime = currentdate.getDay() + "." + currentdate.getMonth() 
+    + "." + currentdate.getFullYear() + " " 
+    + currentdate.getHours() + ":" 
+    + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+  
+  let chatMessageString = `
+    <div>
+    <div>${datetime}</div> 
+    <div>${userName}</div>
+    <div> ${message.message} </div> 
+    </div>`;
+
+    
+  let informationMessagesString = `
+  <div>
+  <div>${datetime}</div> 
+  <div>${userName}</div>
+  <div> ${message.message} </div> 
+  </div>`;
+
+//  writChatOrInformation("chatPart", chatMessageString);
+  writChatOrInformation("informationPart", informationMessagesString);
+
 }
 
 socket.addEventListener("close", (event) => {
@@ -95,6 +120,20 @@ socket.addEventListener("error", (event) => {
   console.error("WebSocket error:", event);
 });
 
+async function writChatOrInformation(placeToInsert, messageString) {
+
+  let anchor = document.getElementById(placeToInsert);
+  console.dir(anchor);
+  if (anchor == null) {
+    window.addEventListener("load", (event) => {
+      let anchor = document.getElementById(placeToInsert);
+      anchor.insertAdjacentElement('beforeend', stringToHTML(messageString)); 
+    });
+  } else {
+    anchor.insertAdjacentElement('beforeend', stringToHTML(messageString)); 
+  }
+}
+
 function changeUserName() {
   // TODO: Implement change userName and forward new userName to backend
 
@@ -104,38 +143,36 @@ function changeUserName() {
 
   console.dir(users);
 
-  if(users.length > 0){
+  if (users.length > 0) {
 
     found = users.find((element) => (element === newUserName));
     console.log("found = " + found);
 
-    if(!found) {
+    if (!found) {
 
       executeChangeUserName(newUserName);
 
-    }else{
-  
+    } else {
+
       console.log("No new user entered.");
       alert('Benutzername ${newUserName} existiert schon! Wähle einen anderen Namen.');
-    
-    }  
-  }else{
-    
+
+    }
+  } else {
+
     executeChangeUserName(newUserName);
 
   }
 }
 
 function executeChangeUserName(newUserName) {
-  console.log("....und wieder einmal wird der Name gewechselt");
 
   const messageObject = {
     type: 'user',
     data: newUserName
   };
-  console.log("The userName has changed:" + JSON.stringify(messageObject));
-  socket.send(JSON.stringify(messageObject));
 
+  socket.send(JSON.stringify(messageObject));
   const newHeaderTitle = document.getElementById('chatters-name');
   console.log(newUserName + ", Dein Chat ist hier!");
   newHeaderTitle.innerText = newUserName + ", Dein Chat ist hier!";
@@ -151,6 +188,8 @@ function executeChangeUserName(newUserName) {
   let enterTextField = document.getElementById("write-message");
   enterTextField.setAttribute("style", "background-color: #FFFFFF");
 
+  userName = newUserName;
+
 }
 
 function sendMessage() {
@@ -158,10 +197,17 @@ function sendMessage() {
   const messageValue = document.getElementById('written-message').value;
   const messageObject = {
     type: 'message',
-    data: messageValue
+    data: {
+      message: messageValue,
+      userName: userName
+    }
   };
 
   socket.send(JSON.stringify(messageObject));
+
+  let messageTextField = document.getElementById("written-message");
+  messageTextField.value = "";
+
 
 }
 
@@ -180,3 +226,9 @@ checkEnableEnterMessage = (event) => {
   newUserInputButton.disabled = (enterNewMesageInputTextFile.value === "") ? true : false;
 
 }
+
+var stringToHTML = function (str) {
+	var parser = new DOMParser();
+	var doc = parser.parseFromString(str, 'text/html');
+	return doc.body;
+};
