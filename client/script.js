@@ -22,24 +22,19 @@ let myId = "";
 let userName = "";
 
 socket.addEventListener("open", async (event) => {
-  console.log("WebSocket connected!");
   // TODO: create message object to transmit the user to the backend
 });
 
 socket.addEventListener("message", (event) => {
   const messageObject = JSON.parse(event.data);
-  console.log("Received message from server: " + messageObject.type);
-  console.log("Received message data from server: " + messageObject.data);
   switch (messageObject.type) {
     case "yourId":
 
       myId = messageObject.data;
-      console.log("myId =" + myId);
       break;
 
     case "users":
 
-      console.log("Here come the userNames...");
       users = JSON.parse(messageObject.data);
       showUsers(users);
       break;
@@ -76,11 +71,9 @@ async function showUsers(users) {
     }
 
     let anchor = document.getElementById("anchor-contact-list");
-    console.dir(anchor);
     if (anchor == null) {
       window.addEventListener("load", (event) => {
         let anchor = document.getElementById("anchor-contact-list");
-        console.log("Die Benutzerliste wird erstellt =" + usersString);
         anchor.innerHTML = usersString;
       });
     } else {
@@ -98,8 +91,6 @@ function showMessage(message) {
     <div class="chat-bubble grid-item">
     <div>${message.timeStamp}</div>`; 
 
-  console.log("message.userName = " + message.userName);
-  console.log("userName = " + userName);
 
   let gridItem = "";
 
@@ -127,17 +118,12 @@ function showMessage(message) {
      
   }
 
-  console.log("message.userName = " + message.userName);
-  console.log("userName = " + userName);
-  console.log("myId = " + myId);
-  console.log("gridItem = " + gridItem);
 
   writeChatEntry(gridItem);
 
 }
 
 socket.addEventListener("close", (event) => {
-  console.log("WebSocket closed.");
 });
 
 socket.addEventListener("error", (event) => {
@@ -160,10 +146,7 @@ function gettimeStamp(datetime) {
 async function writeChatEntry(messageString) {
 
   let convertedHTMLString = stringToHTML(messageString);
-  console.log("The converted Element is:");
-  console.dir(convertedHTMLString.childNodes);
   let anchor = document.getElementById("chatArea");
-  console.dir(anchor);
   if (anchor == null) {
     window.addEventListener("load", (event) => {
       let anchor = document.getElementById("chatArea");
@@ -185,12 +168,10 @@ function changeUserName() {
 
   let found = undefined;
 
-  console.dir(users);
 
   if (users.length > 0) {
 
     found = users.find((element) => (element === newUserName));
-    console.log("found = " + found);
 
     if (!found) {
 
@@ -198,7 +179,6 @@ function changeUserName() {
 
     } else {
 
-      console.log("No new user entered.");
       alert('Benutzername ${newUserName} existiert schon! Wähle einen anderen Namen.');
 
     }
@@ -218,7 +198,6 @@ function executeChangeUserName(newUserName) {
 
   socket.send(JSON.stringify(messageObject));
   const newHeaderTitle = document.getElementById('chatters-name');
-  console.log(newUserName + ", Dein Chat ist hier!");
   newHeaderTitle.innerText = newUserName + ", Dein Chat ist hier!";
   let newUserInputTextField = document.getElementById('new-user-name');
   newUserInputTextField.value = "";
@@ -233,14 +212,12 @@ function executeChangeUserName(newUserName) {
   enterTextField.setAttribute("style", "background-color: #FFFFFF");
 
   userName = newUserName;
-  console.log("Username chagned: " + userName)
 
 }
 
 function sendMessage() {
 
   let dateTime = gettimeStamp();
-  console.log(dateTime = dateTime);
 
   const messageValue = document.getElementById('written-message').value;
   const messageObject = {

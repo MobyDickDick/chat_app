@@ -25,7 +25,6 @@ const onConnection = (ws, req) => {
 
   ws.id = req.headers['sec-websocket-key'];
 
-  console.log("ws.id = " + ws.id);
 
   ws.on("close", () => onClose(ws));
   ws.on("message", (message) => onClientMessage(ws, message));
@@ -39,8 +38,6 @@ const onConnection = (ws, req) => {
 
   let userList = getUsers();
 
-  console.log("Return the userList");
-  console.dir(userList);
 
   if(userList){
     ws.send(JSON.stringify(userList));
@@ -48,7 +45,6 @@ const onConnection = (ws, req) => {
 
   getMessageHistory().then(
     messageHistory =>{
-      console.dir(messageHistory);
       if(messageHistory){
         let parsedMessageHistory = JSON.parse(messageHistory);
         parsedMessageHistory.forEach(message =>{
@@ -61,22 +57,15 @@ const onConnection = (ws, req) => {
 
 // If a new message is received, the onClientMessage function is called
 const onClientMessage = async (ws, message) => {
-  console.log("Parcing the websocket");
-  console.dir(ws.id);
-  console.log("End parcing the websocket");
   const messageObject = JSON.parse(message);
-  console.log("I have received a message from client with type: " + messageObject.type);
   switch (messageObject.type) {
     case "pong":
-      console.log("Received from client: " + messageObject.data);
       break;
     case "user":
       // TODO: Publish all connected users to all connected clients
-      console.log("new userName entered: " + message);
       publishNewUser(ws, messageObject);
       break;
     case "message":
-      console.log("The message was: " + JSON.stringify(messageObject.data));
       renderMessage(messageObject);
       break;
     default:
@@ -86,7 +75,6 @@ const onClientMessage = async (ws, message) => {
 
 // If a connection is closed, the onClose function is called
 const onClose = async (ws) => {
-  console.log("Websocket connection closed");
   // TODO: Remove related user from connected users and propagate new list
   clients.delete(ws.id);
   publishNewUserNames();
@@ -104,7 +92,6 @@ const setMessageHistory = async (messageHistory) => {
 
 const renderMessage = async (messageObject) => {
   // TODO: Publish new message to all connected clients and save in redis
-  console.log("Here we are!");
 
   /* Save the message in the message history. */
   await getMessageHistory().then(
@@ -138,8 +125,6 @@ function publishNewUser(ws, messageObject) {
 
 const changeMessages = async function (oldUserName, newUserName){
 
-  console.log("old user Name =" + oldUserName);
-  console.log("new user Name =" + newUserName);
  
    /* Save the message in the message history. */
    await getMessageHistory().then(
@@ -147,19 +132,14 @@ const changeMessages = async function (oldUserName, newUserName){
       messageHistory = JSON.parse(getMessages);
     })
 
-  console.log("old Messages = " + JSON.stringify(messageHistory));
   let changedMessageHistory = [];
   messageHistory.forEach(message =>{
-    console.log("message userName from history: " + message.data.userName);
-    console.log("compare message name         : " + oldUserName);
 
     if(message.data.userName === oldUserName){
-      console.log("UserName Changed");
       message.data.userName = newUserName;
     }
     changedMessageHistory.push(message);
   });
-  console.log("new Messages = " + JSON.stringify(changedMessageHistory));
    
   await setMessageHistory(JSON.stringify(changedMessageHistory));
 
@@ -184,9 +164,6 @@ const getUserNameArray = (clients) => {
     }
   });
 
-  console.log("before Array to Return");
-  console.dir(arrayToReturn);
-  console.log("after Array to Return");
 
   return arrayToReturn;
 };
@@ -196,7 +173,6 @@ module.exports = { initializeWebsocketServer };
 function publishNewUserNames() {
 
   let userNames = getUsers();
-  console.dir(userNames);
 
   if(userNames){
     clients.forEach(client => {
