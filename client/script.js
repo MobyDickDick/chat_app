@@ -107,7 +107,7 @@ function showMessage(message) {
   <div> ${message.message} </div> 
   </div>`;
 
-//  writChatOrInformation("chatPart", chatMessageString);
+  writChatOrInformation("chatPart", chatMessageString);
   writChatOrInformation("informationPart", informationMessagesString);
 
 }
