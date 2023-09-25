@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: chat
-          image: silvanzemp/chatapp:latest
+          image: markusdemarmels/chatapp:latest
           resources:
             limits:
               cpu: "0.5"
