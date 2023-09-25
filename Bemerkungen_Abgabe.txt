@@ -1,0 +1,19 @@
+Guten Abend Patrick
+
+Irgendetwas habe ich schon gemacht.
+
+Das Git-Repository ist:
+
+https://github.com/MobyDickDick/chatapp
+
+
+Die Datei mit den kleinen Tests heisst:
+
+"Test und weitere Angaben.pdf"
+
+ist im Git-Repository.
+
+Das Dockerhub-Repository ist:
+
+https://hub.docker.com/repository/docker/markuswalfisch/chatapp/general
+

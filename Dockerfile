@@ -5,16 +5,13 @@ FROM node:18
 WORKDIR /app
 
 # Copy the package.json and package-lock.json files to the container
-COPY package.json package-lock.json
+COPY . .
 
 # Install the dependencies
-RUN yarn install
-
-# Copy the source code to the container
-COPY . .
+RUN npm install
 
 # Expose port
 EXPOSE 3000
 
 # Start the server when the container starts
-CMD ["yarn", "prod"]
+CMD ["npm", "run", "start"]
