@@ -96,7 +96,9 @@ const renderMessage = async (messageObject) => {
   /* Save the message in the message history. */
   await getMessageHistory().then(
     getMessages => {
-      messageHistory = JSON.parse(getMessages);
+      if(getMessages){
+        messageHistory = JSON.parse(getMessages);
+      }
     })
 
   messageHistory.push(messageObject);
@@ -124,13 +126,16 @@ function publishNewUser(ws, messageObject) {
 }
 
 const changeMessages = async function (oldUserName, newUserName){
-
  
    /* Save the message in the message history. */
    await getMessageHistory().then(
     getMessages => {
-      messageHistory = JSON.parse(getMessages);
+      if(getMessages){
+        messageHistory = JSON.parse(getMessages);
+      }
     })
+
+  console.log("messageHistory = " + messageHistory);
 
   let changedMessageHistory = [];
   messageHistory.forEach(message =>{

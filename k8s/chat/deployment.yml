@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chat-deployment
-  namespace: pvs-teko16 # Replace with your namespace
+  namespace: pvs-teko # Replace with your namespace
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: chat
-          image: markusdemarmels/chat_app:latest
+          image: markusdemarmels/chatapp:latest
           resources:
             limits:
               cpu: "0.5"
