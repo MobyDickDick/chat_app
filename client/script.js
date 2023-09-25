@@ -133,7 +133,7 @@ socket.addEventListener("error", (event) => {
 function gettimeStamp(datetime) {
 
   let currentdate = new Date();
-  datetime = currentdate.getDay() + "." + currentdate.getMonth()
+  datetime = currentdate.getDate() + "." + (currentdate.getMonth()+1)
     + "." + currentdate.getFullYear() + " "
     + formatNumber(2, currentdate.getHours()) + ":"
     + formatNumber(2, currentdate.getMinutes()) + ":"
